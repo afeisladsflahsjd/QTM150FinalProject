@@ -7,6 +7,8 @@ output: slidy_presentation
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+library(rJava)
+install.packages("xlsx")
 library(xlsx)
 library(tidyverse)
 install.packages("ggridges")
@@ -162,4 +164,10 @@ summary(cars)
 ```{r pressure}
 plot(pressure)
 ```
+
+
+
+
+
+
 
