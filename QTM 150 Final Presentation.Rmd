@@ -5,11 +5,12 @@ date: "`r Sys.Date()`"
 output: slidy_presentation
 ---
 
+#Introduction To Our Scenario - Vmmmm Vmmmm, you get a Twitter notification, a zombie apocalypse has just been announced. - Luck! A genie has gifted you a car with unlimited gas in the US - sans Hawaii and Alaska - Bad Luck!, you can drive it just once - Where do you go? This is what we set out to discover in our R project.
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-library(rJava)
-install.packages("xlsx")
-library(xlsx)
+install.packages("readxl")
+library(readxl)
 library(tidyverse)
 install.packages("ggridges")
 library(ggridges)
@@ -25,10 +26,10 @@ precip <- read.csv("precipitation-1.csv", skip=3)
 drought <- read.csv("drought_severity_index-1.csv", skip=2)
 temp <- read.csv("average_temp-1.csv", skip=3)
 agriculture <- read.csv("US_Counties_Agriculture_Census_(USDA)-1.csv")
-population <- read.xlsx("co-est2024-pop-1.xlsx", sheetIndex=1)
+population <- read_excel("co-est2024-pop-1.xlsx")
 population <- population[-1,]
 population <- population[1:3144,]
-population$Geographic.Area <- substr(population$Geographic.Area, 2, 100)
+population$Geographic.Area <- substr(population$'Geographic Area', 2, 100)
 population <- population %>% separate(
   Geographic.Area, 
   into=c("County", "State"),
@@ -93,7 +94,7 @@ combined_data$gun_manufacturer <- combined_data$total_pistols != 0
 write.csv(combined_data, "combined_data-2", row.names=FALSE)
 
 combined_data <- combined_data %>% mutate(
-  pop_density = X2024/atlas_area,
+  pop_density = 2024/atlas_area,
   percent_farmland = LandinFarmsAcr/atlas_acre
 )
 
@@ -141,33 +142,28 @@ combined_data <- combined_data %>%
   left_join(indicies %>% select(ID, index_1), join_by(ID))
 ```
 
-## R Markdown
+#How Zombie Index Was Calculated
 
-This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r pressure}
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+ggplot(combined_data%>%filter(!is.na(candidate)), 
+       aes(x=percent_farm_failed, y=candidate, color=candidate, fill=candidate)) +
+  geom_density_ridges(alpha=0.7, show.legend=FALSE) +
+  labs(
+    title = "Percent Farmland Failed Distribution for Candidate and Non Candidate Counties",
+    subtitle = str_c("Candidate County: Population Density < 100 people/mi", supsc("2"),
+                     ", Percent Farmland > 60%, Has Gun Manufacturer"),
+    y = "Candidate County",
+    x = "Percent Farmland Failed"
+  ) +
+  theme_minimal()
+```
 
-## Slide with Bullets
-
-- Bullet 1
-- Bullet 2
-- Bullet 3
+-   Percent farmland below 0.1, or 10%, contains most candidate counties.
+-   We reason that 90% farmland success was enough for reliable food production
 
 ## Slide with R Output
 
 ```{r cars, echo = TRUE}
 summary(cars)
 ```
-
-## Slide with Plot
-
-```{r pressure}
-plot(pressure)
-```
-
-
-
-
-
-
-

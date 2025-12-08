@@ -602,6 +602,8 @@ ggplot(combined_data%>%filter(!is.na(candidate)),
   ) +
   theme_minimal()
 
+#William: I began to add these to the mark down for the slides that talk about the ranges we used for the zombie index
+
 ggplot(combined_data%>%filter(!is.na(candidate)), 
        aes(x=percent_farm_failed, y=candidate, color=candidate, fill=candidate)) +
   geom_density_ridges(alpha=0.7, show.legend=FALSE) +
