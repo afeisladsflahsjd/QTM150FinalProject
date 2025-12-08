@@ -1,6 +1,6 @@
 # GROUP PROJECT 2
 library(rJava)
-library(xlsx)
+library(readxl)
 library(tidyverse)
 
 
@@ -13,15 +13,15 @@ precip <- read.csv("precipitation-1.csv", skip=3)
 drought <- read.csv("drought_severity_index-1.csv", skip=2)
 temp <- read.csv("average_temp-1.csv", skip=3)
 agriculture <- read.csv("US_Counties_Agriculture_Census_(USDA)-1.csv")
-population <- read.xlsx("co-est2024-pop-1.xlsx", sheetIndex=1)
+population <- read_excel("co-est2024-pop-1.xlsx")
 population <- population[-1,]
 population <- population[1:3144,]
-population$Geographic.Area <- substr(population$Geographic.Area, 2, 100)
+population$Geographic.Area <- substr(population$'Geographic Area', 2, 100)
 population <- population %>% separate(
   Geographic.Area, 
   into=c("County", "State"),
   sep=","
-  )
+)
 population$County <- tolower(population$County)
 population$County <- gsub("[^a-z0-9]", "", population$County)
 temp$Name <- tolower(temp$Name)
@@ -81,7 +81,7 @@ combined_data$gun_manufacturer <- combined_data$total_pistols != 0
 write.csv(combined_data, "combined_data-2", row.names=FALSE)
 
 combined_data <- combined_data %>% mutate(
-  pop_density = X2024/atlas_area,
+  pop_density = 2024/atlas_area,
   percent_farmland = LandinFarmsAcr/atlas_acre
 )
 
@@ -186,7 +186,7 @@ ggplot(combined_data %>% filter(pop_density < 200),
 
 ggplot(combined_data, 
        aes(x=state_abbr, fill=(pop_density < 200 & percent_farmland > 0.75 & 
-                                gun_manufacturer))) +
+                                 gun_manufacturer))) +
   geom_bar()
 
 combined_data_filtered <- combined_data %>% 
@@ -202,7 +202,7 @@ combined_data_filtered <- combined_data_filtered %>% arrange(desc(drought))
 
 ggplot(combined_data_filtered, 
        aes(x=drought, y=state_abbr, color = state_abbr, fill=state_abbr)) +
-         geom_density_ridges(alpha=0.8)
+  geom_density_ridges(alpha=0.8)
 
 min_temp <- read.csv("jan_min_temp.csv", skip=3)
 max_temp <- read.csv("july_max_temp.csv", skip=3)
@@ -282,15 +282,15 @@ combined_data %>% filter(
 )
 
 indicies <- combined_data %>% select(
-    ID, 
-    Name, 
-    pop_density, 
-    percent_farmland, 
-    gun_manufacturer, 
-    percent_farm_failed, 
-    avg_temp, 
-    temp_range, 
-    drought) %>% 
+  ID, 
+  Name, 
+  pop_density, 
+  percent_farmland, 
+  gun_manufacturer, 
+  percent_farm_failed, 
+  avg_temp, 
+  temp_range, 
+  drought) %>% 
   mutate(
     p_1 = (pop_density^3)/1000000, 
     pf_1 = (1.5/percent_farmland) - 1.5,
@@ -675,4 +675,3 @@ ggplot(indicies %>% filter(index_1 < 50), aes(x=drought, y=index_1)) +
   ) +
   theme_minimal()
 
-  
