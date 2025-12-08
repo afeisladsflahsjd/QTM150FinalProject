@@ -401,5 +401,5 @@ ggplot(combined_data%>%filter(!is.na(candidate)),
   theme_minimal()
 ```
 
--   Percent farmland below 0.1, or 10%, contains most candidate counties.
+-   Percent farmland failed below 0.1, or 10%, contains most candidate counties.
 -   We reason that 90% farmland success was enough for reliable food production
