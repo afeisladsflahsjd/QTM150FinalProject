@@ -420,6 +420,7 @@ ggplot(combined_data, aes(x=pop_density)) +
   ) +
   theme_minimal()
 
+#William: Used this one
 ggplot(combined_data, aes(x=percent_farmland)) + 
   geom_histogram() +
   labs(
@@ -458,6 +459,7 @@ ggplot(combined_data %>% filter(pop_density<2500), aes(x=pop_density, y=percent_
   ) +
   theme_minimal()
 
+#William: used this one
 ggplot(combined_data %>% filter(pop_density<100), aes(x=pop_density, y=percent_farmland)) + 
   geom_point(alpha = 0.6) +
   labs(
@@ -468,6 +470,7 @@ ggplot(combined_data %>% filter(pop_density<100), aes(x=pop_density, y=percent_f
   ) +
   theme_minimal()
 
+#William: Used this one
 ggplot(combined_data %>% filter(pop_density<100, percent_farmland > 0.6), 
        aes(x=pop_density, y=percent_farmland)) + 
   geom_point(alpha = 0.6) +
@@ -494,6 +497,7 @@ ggplot(combined_data %>% filter(pop_density<100, percent_farmland > 0.6),
   ) +
   theme_minimal()
 
+#William: Used this
 ggplot(combined_data %>% filter(pop_density<100, percent_farmland > 0.6), 
        aes(x=pop_density, y=percent_farmland, color = gun_manufacturer)) +
   geom_point() +
@@ -510,6 +514,7 @@ ggplot(combined_data %>% filter(pop_density<100, percent_farmland > 0.6),
 combined_data <- combined_data %>% 
   mutate(candidate = pop_density < 100 & percent_farmland > 0.6 & gun_manufacturer)
 
+#William: used this
 ggplot(combined_data %>% filter(candidate), 
        aes(x=pop_density, y=percent_farmland, color = drought)) +
   geom_point() +
@@ -524,6 +529,7 @@ ggplot(combined_data %>% filter(candidate),
   ) +
   theme_minimal()
 
+#William: used this
 ggplot(combined_data %>% filter(candidate), 
        aes(x=pop_density, y=percent_farmland, color = avg_temp)) +
   geom_point() +
@@ -538,6 +544,7 @@ ggplot(combined_data %>% filter(candidate),
   ) +
   theme_minimal()
 
+#William: used this
 ggplot(combined_data %>% filter(candidate), 
        aes(x=pop_density, y=percent_farmland, color = temp_range)) +
   geom_point() +
@@ -552,6 +559,7 @@ ggplot(combined_data %>% filter(candidate),
   ) +
   theme_minimal()
 
+#William used this
 ggplot(combined_data %>% filter(candidate), 
        aes(x=pop_density, y=percent_farmland, color = percent_farm_failed)) +
   geom_point() +
@@ -566,6 +574,8 @@ ggplot(combined_data %>% filter(candidate),
   ) +
   theme_minimal()
 
+#William: I added this one
+
 ggplot(combined_data%>%filter(!is.na(candidate)), 
        aes(x=drought, y=candidate, color=candidate, fill=candidate)) +
   geom_density_ridges(alpha=0.7, show.legend=FALSE) +
@@ -578,6 +588,8 @@ ggplot(combined_data%>%filter(!is.na(candidate)),
   ) +
   theme_minimal()
 
+#William: I added this one
+
 ggplot(combined_data%>%filter(!is.na(candidate)), 
        aes(x=avg_temp, y=candidate, color=candidate, fill=candidate)) +
   geom_density_ridges(alpha=0.7, show.legend=FALSE) +
@@ -589,6 +601,8 @@ ggplot(combined_data%>%filter(!is.na(candidate)),
     x = "Average Temperature"
   ) +
   theme_minimal()
+
+#William: I Did this one
 
 ggplot(combined_data%>%filter(!is.na(candidate)), 
        aes(x=temp_range, y=candidate, color=candidate, fill=candidate)) +

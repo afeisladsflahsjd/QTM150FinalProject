@@ -2,10 +2,21 @@
 title: "QTM 150 Final Presentation"
 author: "Nick Huberty"
 date: "`r Sys.Date()`"
-output: slidy_presentation
+output:
+  slidy_presentation: default
+  beamer_presentation: default
+  ioslides_presentation: default
 ---
 
-#Introduction To Our Scenario - Vmmmm Vmmmm, you get a Twitter notification, a zombie apocalypse has just been announced. - Luck! A genie has gifted you a car with unlimited gas in the US - sans Hawaii and Alaska - Bad Luck!, you can drive it just once - Where do you go? This is what we set out to discover in our R project.
+## Introduction To Our Scenario
+
+-   Vmmmm Vmmmm, you get a Twitter notification, a zombie apocalypse has just been announced.
+
+-   Luck! A genie has gifted you a car with unlimited gas in the US - sans Hawaii and Alaska.
+
+-   Bad Luck!, you can drive it just once.
+
+-   Where do you go? This is what we set out to discover in our R project.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
@@ -16,6 +27,8 @@ install.packages("ggridges")
 library(ggridges)
 install.packages("common")
 library(common)
+install.packages("gridExtra")
+library(gridExtra)
 
 pistols <- read.csv("pistols_manufacturers.csv")
 pistols <- pistols %>% select(where(~any(!is.na(.))))
@@ -142,7 +155,236 @@ combined_data <- combined_data %>%
   left_join(indicies %>% select(ID, index_1), join_by(ID))
 ```
 
-#How Zombie Index Was Calculated
+# How we picked candidate counties
+
+-   These counties are our bare bone counties
+
+    -   Enough farm land
+
+    -   Not too many people
+
+    -   Probable to find ammunition
+
+# Beginning with Farming
+
+```{r pressure}
+
+ggplot(combined_data, aes(x=percent_farmland)) + 
+  geom_histogram() +
+  labs(
+    x="Percent Farmland",
+    y="Number of Counties",
+    title="Percentage of County Area That is Farmland"
+  ) +
+  theme_minimal()
+```
+
+-   This histogram shows us the number of counties with corrosponding amounts of farm land
+-   from here we concluded that 60% farmland or greater was adequate in an ideal location, reducing our sample to 40% of the counties in the US
+
+# Moving on to Population Density
+
+```{r pressure}
+
+ggplot(combined_data %>% filter(pop_density<100), aes(x=pop_density, y=percent_farmland)) + 
+  geom_point(alpha = 0.6) +
+  labs(
+    x=str_c("Population Density (people/mi", supsc("2"), ")"),
+    y="Percent Farmland",
+    title = "Percent Farmland vs. Population Density",
+    subtitle = str_c("Population Density < 100 people/mi", supsc("2"))
+  ) +
+  theme_minimal()
+```
+
+-   This histogram shows us the counties with population densities \<100 per mile\^2
+-   While we might have been able to be stricter in our range, we simply want to get a broad list of candidate counties, and \<100 humans per square mile removed most outliers
+
+# Combining These
+
+```{r pressure}
+
+ggplot(combined_data %>% filter(pop_density<100, percent_farmland > 0.6), 
+       aes(x=pop_density, y=percent_farmland)) + 
+  geom_point(alpha = 0.6) +
+  labs(
+    x=str_c("Population Density (people/mi", supsc("2"), ")"),
+    y="Percent Farmland",
+    title = "Percent Farmland vs. Population Density",
+    subtitle = str_c("Population Density < 100 people/mi", supsc("2"),
+                     ", Percent Farmland > 60%")
+  ) +
+  theme_minimal()
+```
+
+-   This scatter plot shows us the candidate counties following our parameters
+    -   \>60% farmland
+    -   \<100 people/mile square
+-   From here we can add our third most important variable to surviving a zombie apocalypse
+
+# Adding Guns
+
+```{r pressure}
+
+ggplot(combined_data %>% filter(pop_density<100, percent_farmland > 0.6), 
+       aes(x=pop_density, y=percent_farmland, color = gun_manufacturer)) +
+  geom_point() +
+  labs(
+    x=str_c("Population Density (people/mi", supsc("2"), ")"),
+    y="Percent Farmland",
+    title = "Percent Farmland vs. Population Density",
+    subtitle = str_c("Population Density < 100 people/mi", supsc("2"),
+                     ", Percent Farmland > 60%"),
+    color = "County Has\nGun Manufacturer"
+  ) +
+  theme_minimal()
+```
+
+-   Of our candidates, we take out counties without a gun manufacturer as counties without one would most likely have less ammunitions to defend against the zombies
+-   This leaves us with a bare bones list of candidate counties
+
+# Comparing Candidate Counties
+
+```{r pressure}
+par(mfrow=c(2,2))
+g1 <- ggplot(combined_data %>% filter(candidate), 
+       aes(x=pop_density, y=percent_farmland, color = drought)) +
+  geom_point() +
+  scale_color_gradient(high="red", low="blue") +
+  labs(
+    x=str_c("Population Density (people/mi", supsc("2"), ")"),
+    y="Percent Farmland",
+    title = "Percent Farmland vs. Population Density",
+    subtitle = str_c("Population Density < 100 people/mi", supsc("2"),
+                     ", Percent Farmland > 60%, Has Gun Manufacturer"),
+    color = "Drought\nSeverity\nIndex"
+  ) +
+  theme_minimal()
+
+g2 <- ggplot(combined_data %>% filter(candidate), 
+       aes(x=pop_density, y=percent_farmland, color = avg_temp)) +
+  geom_point() +
+  scale_color_gradient(high="red", low="blue") +
+  labs(
+    x=str_c("Population Density (people/mi", supsc("2"), ")"),
+    y="Percent Farmland",
+    title = "Percent Farmland vs. Population Density",
+    subtitle = str_c("Population Density < 100 people/mi", supsc("2"),
+                     ", Percent Farmland > 60%, Has Gun Manufacturer"),
+    color = "Average\nTemperature"
+  ) +
+  theme_minimal()
+
+g3 <- ggplot(combined_data %>% filter(candidate), 
+       aes(x=pop_density, y=percent_farmland, color = temp_range)) +
+  geom_point() +
+  scale_color_gradient(high="red", low="blue") +
+  labs(
+    x=str_c("Population Density (people/mi", supsc("2"), ")"),
+    y="Percent Farmland",
+    title = "Percent Farmland vs. Population Density",
+    subtitle = str_c("Population Density < 100 people/mi", supsc("2"),
+                     ", Percent Farmland > 60%, Has Gun Manufacturer"),
+    color = "Temperature\nRange"
+  ) +
+  theme_minimal()
+
+
+g4 <- ggplot(combined_data %>% filter(candidate), 
+       aes(x=pop_density, y=percent_farmland, color = percent_farm_failed)) +
+  geom_point() +
+  scale_color_gradient(high="red", low="blue") +
+  labs(
+    x=str_c("Population Density (people/mi", supsc("2"), ")"),
+    y="Percent Farmland",
+    title = "Percent Farmland vs. Population Density",
+    subtitle = str_c("Population Density < 100 people/mi", supsc("2"),
+                     ", Percent Farmland > 60%, Has Gun Manufacturer"),
+    color = "% Farmland\nFailed"
+  ) +
+  theme_minimal()
+
+library(gridExtra)
+grid.arrange(g1, g2, g3,g4, nrow = 2)
+```
+
+-   You can use Notebook Output to see these graphs much more clearly
+-   Different variables were compared to the list of candidate counties, allowing, visually, the best counties to jump out more easily
+
+# Zombie Index Parameters
+
+-   Density plots of candidate counties were used in order find thresholds for certain values
+
+    -   Drought severity
+
+    -   Average Temperature
+
+    -   Temperature Variance
+
+    -   Percent Farmland Failed
+
+-   These ranges were then used when creating the Zombie index, giving us our list of counties to go to during a zombie apocalypse
+
+# Drought Severity Index Threshold
+
+```{r pressure}
+
+ggplot(combined_data%>%filter(!is.na(candidate)), 
+       aes(x=drought, y=candidate, color=candidate, fill=candidate)) +
+  geom_density_ridges(alpha=0.7, show.legend=FALSE) +
+  labs(
+    title = "Drought Severity Index Distribution for Candidate and Non Candidate Counties",
+    subtitle = str_c("Candidate County: Population Density < 100 people/mi", supsc("2"),
+                     ", Percent Farmland > 60%, Has Gun Manufacturer"),
+    y = "Candidate County",
+    x = "Drought Severity Index"
+  ) +
+  theme_minimal()
+```
+
+-   Our drought severity parameter ranged between 0 to 3, as average to slightly wet would most likely yield the most crops
+-   in terms of living as well. Dry climates and lack of water may become health issues later on.
+
+# Average Temperature Threshold
+
+```{r pressure}
+
+ggplot(combined_data%>%filter(!is.na(candidate)), 
+       aes(x=avg_temp, y=candidate, color=candidate, fill=candidate)) +
+  geom_density_ridges(alpha=0.7, show.legend=FALSE) +
+  labs(
+    title = "Average Temperature Distribution for Candidate and Non Candidate Counties",
+    subtitle = str_c("Candidate County: Population Density < 100 people/mi", supsc("2"),
+                     ", Percent Farmland > 60%, Has Gun Manufacturer"),
+    y = "Candidate County",
+    x = "Average Temperature"
+  ) +
+  theme_minimal()
+```
+
+-   Average temperature ranged from 55 to 71, contains most candidate counties.
+-   This feels reasonable as well, as it isn't too cold nor too warm, which may cause quality of life issues
+
+# Temperature Variation Threshold
+
+```{r pressure}
+
+ggplot(combined_data%>%filter(!is.na(candidate)), 
+       aes(x=temp_range, y=candidate, color=candidate, fill=candidate)) +
+  geom_density_ridges(alpha=0.7, show.legend=FALSE) +
+  labs(
+    title = "Temperature Range Distribution for Candidate and Non Candidate Counties",
+    subtitle = str_c("Candidate County: Population Density < 100 people/mi", supsc("2"),
+                     ", Percent Farmland > 60%, Has Gun Manufacturer"),
+    y = "Candidate County",
+    x = "Temperature Range"
+  ) +
+  theme_minimal()
+```
+
+-   Temperature ranges were roughly 75 degrees throughout the year, contains most candidate counties.
+
+# Percent Farmland Failed Threshold
 
 ```{r pressure}
 
@@ -161,9 +403,3 @@ ggplot(combined_data%>%filter(!is.na(candidate)),
 
 -   Percent farmland below 0.1, or 10%, contains most candidate counties.
 -   We reason that 90% farmland success was enough for reliable food production
-
-## Slide with R Output
-
-```{r cars, echo = TRUE}
-summary(cars)
-```
