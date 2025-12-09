@@ -520,20 +520,21 @@ p6 <- ggplot(indicies %>% filter(index_1 < 50), aes(x=drought, y=index_1)) +
   theme_minimal()
 grid.arrange(p1, p2, p3,p4,p5,p6, nrow = 2)
 ```
+# Map Overlays of Important Statistics
+
+-    Here are a few examples of variable maps for our variables. For the sake of brevity, we only include drought severity and precipitation here. In the next slide, we show the effect of all variables taken together.
+
 ```{r}
 map_data <- counties_sf %>%
   inner_join(combined_data, by = c("GEOID" = "GEOID"))
 ggplot(map_data) +
-  geom_sf(aes(fill = temp), color = NA) +
+  geom_sf(aes(fill = drought), color = NA) +
   scale_fill_viridis_c(option = "inferno") +
   theme_minimal() +
   labs(
-    title = "County Map of Temperature",
-    fill = "Temperature"
+    title = "County Map of Drought",
+    fill = "Severity"
   )
-```
-
-```{r}
 map_data <- counties_sf %>%
   inner_join(combined_data, by = c("GEOID" = "GEOID"))
 ggplot(map_data) +
@@ -545,6 +546,11 @@ ggplot(map_data) +
     fill = "Rainfall"
   )
 ```
+
+# Map Overlay of the MOST Important Statistic!
+
+-   This display demonstrates the areas near you that would be best for surviving zombies based on all our variables.
+-   DON'T go to Monroe County, Florida.
 
 ```{r}
 map_data <- counties_sf %>%
@@ -558,3 +564,5 @@ ggplot(map_data) +
     fill = "Index Value"
   )
 ```
+
+# GOOD LUCK!!!
