@@ -1,7 +1,13 @@
 # GROUP PROJECT 2
 library(readxl)
 library(tidyverse)
-
+library(dplyr)
+library(stringr)
+library(sf)
+library(tigris)
+library(tidycensus)
+library(ggplot2)
+library(ggridges)
 
 pistols <- read.csv("pistols_manufacturers.csv")
 pistols <- pistols %>% select(where(~any(!is.na(.))))
@@ -80,7 +86,7 @@ combined_data$gun_manufacturer <- combined_data$total_pistols != 0
 write.csv(combined_data, "combined_data-2", row.names=FALSE)
 
 combined_data <- combined_data %>% mutate(
-  pop_density = 2024/atlas_area,
+  pop_density = `2024`/atlas_area,
   percent_farmland = LandinFarmsAcr/atlas_acre
 )
 
@@ -174,9 +180,6 @@ ggplot(combined_data, aes(x=gun_manufacturer, y=percent_farmland)) +
 
 ggplot(combined_data, aes(x=gun_manufacturer, y=pop_density)) +
   geom_boxplot()
-
-install.packages("ggridges")
-library(ggridges)
 
 ggplot(combined_data %>% filter(pop_density < 200),
        aes(x=pop_density, y=gun_manufacturer, color=gun_manufacturer, 
@@ -690,3 +693,45 @@ ggplot(indicies %>% filter(index_1 < 50), aes(x=drought, y=index_1)) +
   ) +
   theme_minimal()
 
+options(tigris_use_cache = TRUE)
+
+combined_data <- combined_data %>%
+  mutate(
+    STATE_ABB = str_sub(ID, 1, 2),
+    COUNTY = str_sub(ID, 4, 6)   # always 3 digits
+  )
+
+data("fips_codes", package = "tidycensus")
+
+state_crosswalk <- fips_codes %>%
+  select(state, state_code) %>% 
+  distinct()
+
+combined_data <- combined_data %>%
+  left_join(
+    state_crosswalk,
+    by = c("STATE_ABB" = "state")
+  ) %>%
+  mutate(
+    GEOID = paste0(state_code, COUNTY)
+  )
+
+counties_sf <- counties(year = 2020, class = "sf") %>% 
+  st_transform(4326)
+
+map_data <- counties_sf %>%
+  inner_join(combined_data, by = c("GEOID" = "GEOID"))
+
+ggplot(map_data) +
+  geom_sf(aes(fill = index_1), color = NA) +
+  scale_fill_viridis_c(option = "plasma") +
+  theme_minimal() +
+  labs(
+    title = "County Map of Zombie Survival Index",
+    fill = "Index Value"
+  )
+
+combined_data %>%
+  arrange(desc(as.numeric(index_1))) %>%
+  slice_head(n = 6)
+# top rows match map - goooood
