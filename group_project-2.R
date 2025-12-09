@@ -1,5 +1,4 @@
 # GROUP PROJECT 2
-library(rJava)
 library(readxl)
 library(tidyverse)
 
