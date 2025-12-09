@@ -25,7 +25,8 @@ library(tidyverse)
 library(ggridges)
 library(common)
 library(gridExtra)
-library(sf)
+remove.packages("sf")
+install.packages("sf", dependencies = TRUE)
 library(tigris)
 options(tigris_use_cache = TRUE)
 library(dplyr)
@@ -198,7 +199,7 @@ counties_sf <- counties(year = 2020, class = "sf") %>%
 
 # Beginning with Farming
 
-```{r pressure}
+```{r}
 
 ggplot(combined_data, aes(x=percent_farmland)) + 
   geom_histogram() +
@@ -214,7 +215,7 @@ ggplot(combined_data, aes(x=percent_farmland)) +
 
 # Moving on to Population Density
 
-```{r pressure}
+```{r}
 
 ggplot(combined_data %>% filter(pop_density<100), aes(x=pop_density, y=percent_farmland)) + 
   geom_point(alpha = 0.6) +
@@ -231,7 +232,7 @@ ggplot(combined_data %>% filter(pop_density<100), aes(x=pop_density, y=percent_f
 
 # Combining These
 
-```{r pressure}
+```{r}
 ggplot(combined_data, aes(x=pop_density, y=percent_farmland)) + 
   geom_point(alpha = 0.6) +
   labs(
@@ -246,7 +247,7 @@ ggplot(combined_data, aes(x=pop_density, y=percent_farmland)) +
 
 # Scatter plot using these thresholds
 
-```{r pressure}
+```{r}
 
 ggplot(combined_data %>% filter(pop_density<100, percent_farmland > 0.6), 
        aes(x=pop_density, y=percent_farmland)) + 
@@ -268,7 +269,7 @@ ggplot(combined_data %>% filter(pop_density<100, percent_farmland > 0.6),
 
 # Adding Guns
 
-```{r pressure}
+```{r}
 
 ggplot(combined_data %>% filter(pop_density<100, percent_farmland > 0.6), 
        aes(x=pop_density, y=percent_farmland, color = gun_manufacturer)) +
@@ -289,7 +290,7 @@ ggplot(combined_data %>% filter(pop_density<100, percent_farmland > 0.6),
 
 # Comparing Candidate Counties
 
-```{r pressure}
+```{r}
 par(mfrow=c(2,2))
 g1 <- ggplot(combined_data %>% filter(candidate), 
        aes(x=pop_density, y=percent_farmland, color = drought)) +
@@ -371,7 +372,7 @@ grid.arrange(g1, g2, g3,g4, nrow = 2)
 
 # Drought Severity Index Threshold
 
-```{r pressure}
+```{r}
 
 ggplot(combined_data%>%filter(!is.na(candidate)), 
        aes(x=drought, y=candidate, color=candidate, fill=candidate)) +
@@ -391,7 +392,7 @@ ggplot(combined_data%>%filter(!is.na(candidate)),
 
 # Average Temperature Threshold
 
-```{r pressure}
+```{r}
 
 ggplot(combined_data%>%filter(!is.na(candidate)), 
        aes(x=avg_temp, y=candidate, color=candidate, fill=candidate)) +
@@ -411,7 +412,7 @@ ggplot(combined_data%>%filter(!is.na(candidate)),
 
 # Temperature Variation Threshold
 
-```{r pressure}
+```{r}
 
 ggplot(combined_data%>%filter(!is.na(candidate)), 
        aes(x=temp_range, y=candidate, color=candidate, fill=candidate)) +
@@ -430,7 +431,7 @@ ggplot(combined_data%>%filter(!is.na(candidate)),
 
 # Percent Farmland Failed Threshold
 
-```{r pressure}
+```{r}
 
 ggplot(combined_data%>%filter(!is.na(candidate)), 
        aes(x=percent_farm_failed, y=candidate, color=candidate, fill=candidate)) +
@@ -456,7 +457,7 @@ ggplot(combined_data%>%filter(!is.na(candidate)),
 
 -   To display how the zombie index varies based on parameters, plots show the sensitivity of the index value to each parameter.
 
-```{r pressure}
+```{r}
 par(mfrow=c(2,3))
 
 p1 <- ggplot(indicies %>% filter(index_1 < 50), aes(x=pop_density, y=index_1)) +
