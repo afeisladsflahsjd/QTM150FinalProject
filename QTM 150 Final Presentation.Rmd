@@ -32,6 +32,8 @@ library(dplyr)
 library(stringr)
 library(ggplot2)
 library(yaml)
+library(rmarkdown)
+library(knitr)
 
 pistols <- read.csv("pistols_manufacturers.csv")
 pistols <- pistols %>% select(where(~any(!is.na(.))))
