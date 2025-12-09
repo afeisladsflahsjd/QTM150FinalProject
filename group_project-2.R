@@ -305,7 +305,7 @@ indicies <- combined_data %>% select(
     at_1 = ((avg_temp-60)^2)/25,
     tr_1 = (temp_range^2)/5625,
     d_1 = ((drought-1.5)^4)/5.0625,
-    index_1 = p_1 + pf_1 + g_1 + ff_1 + at_1 + tr_1 + d_1) %>%
+    index_1 = 5000-5000*exp(0.0002*(p_1 + pf_1 + g_1 + ff_1 + at_1 + tr_1 + d_1))) %>%
   arrange((index_1))
 
 ggplot(indicies, aes(x=index_1)) + 
