@@ -60,6 +60,10 @@ temp$Name <- gsub("[^a-z0-9]", "", temp$Name)
 drought$Name <- tolower(drought$Name)
 drought$Name <- gsub("[^a-z0-9]", "", drought$Name)
 precip$Name <- tolower(precip$Name)
+agriculture$atlas_name <- iconv(agriculture$atlas_name,
+                                from = "",
+                                to = "UTF-8",
+                                sub = "")
 precip$Name <- gsub("[^a-z0-9]", "", precip$Name)
 agriculture$atlas_name <- tolower(agriculture$atlas_name)
 agriculture$atlas_name <- gsub("[^a-z0-9]", "", agriculture$atlas_name)
