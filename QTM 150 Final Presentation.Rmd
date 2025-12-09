@@ -210,7 +210,7 @@ ggplot(combined_data, aes(x=percent_farmland)) +
   theme_minimal()
 ```
 
--   This histogram shows us the number of counties with corrosponding amounts of farm land
+-   This histogram shows us the number of counties with corresponding amounts of farm land
 
 # Moving on to Population Density
 
