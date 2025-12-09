@@ -216,13 +216,12 @@ ggplot(combined_data, aes(x=percent_farmland)) +
 
 ```{r}
 
-ggplot(combined_data %>% filter(pop_density<100), aes(x=pop_density, y=percent_farmland)) + 
-  geom_point(alpha = 0.6) +
+ggplot(combined_data, aes(x=pop_density)) + 
+  geom_histogram(binwidth = 1000) +
   labs(
     x=str_c("Population Density (people/mi", supsc("2"), ")"),
-    y="Percent Farmland",
-    title = "Percent Farmland vs. Population Density",
-    subtitle = str_c("Population Density < 100 people/mi", supsc("2"))
+    y="Number of Counties",
+    title="Contiguous US Counties Population Density Distribution"
   ) +
   theme_minimal()
 ```
@@ -247,7 +246,6 @@ ggplot(combined_data, aes(x=pop_density, y=percent_farmland)) +
 # Scatter plot using these thresholds
 
 ```{r}
-
 ggplot(combined_data %>% filter(pop_density<100, percent_farmland > 0.6), 
        aes(x=pop_density, y=percent_farmland)) + 
   geom_point(alpha = 0.6) +
@@ -520,8 +518,10 @@ p6 <- ggplot(indicies %>% filter(index_1 < 50), aes(x=drought, y=index_1)) +
   theme_minimal()
 grid.arrange(p1, p2, p3,p4,p5,p6, nrow = 2)
 ```
+
 # Maps of Important Statistics
--    Here are a few examples of variable maps for our variables. For the sake of brevity, we only include drought severity and precipitation here. In the next slide, we show the effect of all variables taken together.
+
+-   Here are a few examples of variable maps for our variables. For the sake of brevity, we only include drought severity and precipitation here. In the next slide, we show the effect of all variables taken together.
 
 ```{r}
 map_data <- counties_sf %>%
@@ -535,6 +535,7 @@ ggplot(map_data) +
     fill = "Severity"
   )
 ```
+
 # Maps of Important Statistics
 
 ```{r}

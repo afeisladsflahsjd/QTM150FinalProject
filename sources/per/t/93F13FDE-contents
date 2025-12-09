@@ -1,13 +1,7 @@
 # GROUP PROJECT 2
-library(readxl)
+library(xlsx)
 library(tidyverse)
-library(dplyr)
-library(stringr)
-library(sf)
-library(tigris)
-library(tidycensus)
-library(ggplot2)
-library(ggridges)
+
 
 pistols <- read.csv("pistols_manufacturers.csv")
 pistols <- pistols %>% select(where(~any(!is.na(.))))
@@ -18,15 +12,15 @@ precip <- read.csv("precipitation-1.csv", skip=3)
 drought <- read.csv("drought_severity_index-1.csv", skip=2)
 temp <- read.csv("average_temp-1.csv", skip=3)
 agriculture <- read.csv("US_Counties_Agriculture_Census_(USDA)-1.csv")
-population <- read_excel("co-est2024-pop-1.xlsx")
+population <- read.xlsx("co-est2024-pop-1.xlsx", sheetIndex=1)
 population <- population[-1,]
 population <- population[1:3144,]
-population$Geographic.Area <- substr(population$'Geographic Area', 2, 100)
+population$Geographic.Area <- substr(population$Geographic.Area, 2, 100)
 population <- population %>% separate(
   Geographic.Area, 
   into=c("County", "State"),
   sep=","
-)
+  )
 population$County <- tolower(population$County)
 population$County <- gsub("[^a-z0-9]", "", population$County)
 temp$Name <- tolower(temp$Name)
@@ -86,7 +80,7 @@ combined_data$gun_manufacturer <- combined_data$total_pistols != 0
 write.csv(combined_data, "combined_data-2", row.names=FALSE)
 
 combined_data <- combined_data %>% mutate(
-  pop_density = `2024`/atlas_area,
+  pop_density = X2024/atlas_area,
   percent_farmland = LandinFarmsAcr/atlas_acre
 )
 
@@ -181,6 +175,9 @@ ggplot(combined_data, aes(x=gun_manufacturer, y=percent_farmland)) +
 ggplot(combined_data, aes(x=gun_manufacturer, y=pop_density)) +
   geom_boxplot()
 
+install.packages("ggridges")
+library(ggridges)
+
 ggplot(combined_data %>% filter(pop_density < 200),
        aes(x=pop_density, y=gun_manufacturer, color=gun_manufacturer, 
            fill=gun_manufacturer)) +
@@ -188,7 +185,7 @@ ggplot(combined_data %>% filter(pop_density < 200),
 
 ggplot(combined_data, 
        aes(x=state_abbr, fill=(pop_density < 200 & percent_farmland > 0.75 & 
-                                 gun_manufacturer))) +
+                                gun_manufacturer))) +
   geom_bar()
 
 combined_data_filtered <- combined_data %>% 
@@ -204,7 +201,7 @@ combined_data_filtered <- combined_data_filtered %>% arrange(desc(drought))
 
 ggplot(combined_data_filtered, 
        aes(x=drought, y=state_abbr, color = state_abbr, fill=state_abbr)) +
-  geom_density_ridges(alpha=0.8)
+         geom_density_ridges(alpha=0.8)
 
 min_temp <- read.csv("jan_min_temp.csv", skip=3)
 max_temp <- read.csv("july_max_temp.csv", skip=3)
@@ -273,7 +270,7 @@ ggplot(combined_data_filtered, aes(x=min_temp, y=max_temp, color=temp_range)) +
 
 combined_data %>% filter(
   gun_manufacturer,
-  percent_farmland > 0.65,
+  percent_farmland > 0.60,
   pop_density < 50,
   drought < 3,
   drought > 0, 
@@ -284,15 +281,15 @@ combined_data %>% filter(
 )
 
 indicies <- combined_data %>% select(
-  ID, 
-  Name, 
-  pop_density, 
-  percent_farmland, 
-  gun_manufacturer, 
-  percent_farm_failed, 
-  avg_temp, 
-  temp_range, 
-  drought) %>% 
+    ID, 
+    Name, 
+    pop_density, 
+    percent_farmland, 
+    gun_manufacturer, 
+    percent_farm_failed, 
+    avg_temp, 
+    temp_range, 
+    drought) %>% 
   mutate(
     p_1 = (pop_density^3)/1000000, 
     pf_1 = (1.5/percent_farmland) - 1.5,
@@ -422,7 +419,6 @@ ggplot(combined_data, aes(x=pop_density)) +
   ) +
   theme_minimal()
 
-#William: Used this one
 ggplot(combined_data, aes(x=percent_farmland)) + 
   geom_histogram() +
   labs(
@@ -461,7 +457,6 @@ ggplot(combined_data %>% filter(pop_density<2500), aes(x=pop_density, y=percent_
   ) +
   theme_minimal()
 
-#William: used this one
 ggplot(combined_data %>% filter(pop_density<100), aes(x=pop_density, y=percent_farmland)) + 
   geom_point(alpha = 0.6) +
   labs(
@@ -472,7 +467,6 @@ ggplot(combined_data %>% filter(pop_density<100), aes(x=pop_density, y=percent_f
   ) +
   theme_minimal()
 
-#William: Used this one
 ggplot(combined_data %>% filter(pop_density<100, percent_farmland > 0.6), 
        aes(x=pop_density, y=percent_farmland)) + 
   geom_point(alpha = 0.6) +
@@ -499,7 +493,6 @@ ggplot(combined_data %>% filter(pop_density<100, percent_farmland > 0.6),
   ) +
   theme_minimal()
 
-#William: Used this
 ggplot(combined_data %>% filter(pop_density<100, percent_farmland > 0.6), 
        aes(x=pop_density, y=percent_farmland, color = gun_manufacturer)) +
   geom_point() +
@@ -514,9 +507,9 @@ ggplot(combined_data %>% filter(pop_density<100, percent_farmland > 0.6),
   theme_minimal()
 
 combined_data <- combined_data %>% 
-  mutate(candidate = pop_density < 100 & percent_farmland > 0.6 & gun_manufacturer)
+  mutate(candidate = pop_density < 100 & percent_farmland > 0.6 & gun_manufacturer) %>%
+  left_join(indicies %>% select(ID, index_1), join_by(ID))
 
-#William: used this
 ggplot(combined_data %>% filter(candidate), 
        aes(x=pop_density, y=percent_farmland, color = drought)) +
   geom_point() +
@@ -531,7 +524,6 @@ ggplot(combined_data %>% filter(candidate),
   ) +
   theme_minimal()
 
-#William: used this
 ggplot(combined_data %>% filter(candidate), 
        aes(x=pop_density, y=percent_farmland, color = avg_temp)) +
   geom_point() +
@@ -546,7 +538,6 @@ ggplot(combined_data %>% filter(candidate),
   ) +
   theme_minimal()
 
-#William: used this
 ggplot(combined_data %>% filter(candidate), 
        aes(x=pop_density, y=percent_farmland, color = temp_range)) +
   geom_point() +
@@ -561,7 +552,6 @@ ggplot(combined_data %>% filter(candidate),
   ) +
   theme_minimal()
 
-#William used this
 ggplot(combined_data %>% filter(candidate), 
        aes(x=pop_density, y=percent_farmland, color = percent_farm_failed)) +
   geom_point() +
@@ -576,8 +566,6 @@ ggplot(combined_data %>% filter(candidate),
   ) +
   theme_minimal()
 
-#William: I added this one
-
 ggplot(combined_data%>%filter(!is.na(candidate)), 
        aes(x=drought, y=candidate, color=candidate, fill=candidate)) +
   geom_density_ridges(alpha=0.7, show.legend=FALSE) +
@@ -589,8 +577,6 @@ ggplot(combined_data%>%filter(!is.na(candidate)),
     x = "Drought Severity Index"
   ) +
   theme_minimal()
-
-#William: I added this one
 
 ggplot(combined_data%>%filter(!is.na(candidate)), 
        aes(x=avg_temp, y=candidate, color=candidate, fill=candidate)) +
@@ -604,8 +590,6 @@ ggplot(combined_data%>%filter(!is.na(candidate)),
   ) +
   theme_minimal()
 
-#William: I Did this one
-
 ggplot(combined_data%>%filter(!is.na(candidate)), 
        aes(x=temp_range, y=candidate, color=candidate, fill=candidate)) +
   geom_density_ridges(alpha=0.7, show.legend=FALSE) +
@@ -617,8 +601,6 @@ ggplot(combined_data%>%filter(!is.na(candidate)),
     x = "Temperature Range"
   ) +
   theme_minimal()
-
-#William: I began to add these to the mark down for the slides that talk about the ranges we used for the zombie index
 
 ggplot(combined_data%>%filter(!is.na(candidate)), 
        aes(x=percent_farm_failed, y=candidate, color=candidate, fill=candidate)) +
@@ -693,45 +675,4 @@ ggplot(indicies %>% filter(index_1 < 50), aes(x=drought, y=index_1)) +
   ) +
   theme_minimal()
 
-options(tigris_use_cache = TRUE)
-
-combined_data <- combined_data %>%
-  mutate(
-    STATE_ABB = str_sub(ID, 1, 2),
-    COUNTY = str_sub(ID, 4, 6)   # always 3 digits
-  )
-
-data("fips_codes", package = "tidycensus")
-
-state_crosswalk <- fips_codes %>%
-  select(state, state_code) %>% 
-  distinct()
-
-combined_data <- combined_data %>%
-  left_join(
-    state_crosswalk,
-    by = c("STATE_ABB" = "state")
-  ) %>%
-  mutate(
-    GEOID = paste0(state_code, COUNTY)
-  )
-
-counties_sf <- counties(year = 2020, class = "sf") %>% 
-  st_transform(4326)
-
-map_data <- counties_sf %>%
-  inner_join(combined_data, by = c("GEOID" = "GEOID"))
-
-ggplot(map_data) +
-  geom_sf(aes(fill = index_1), color = NA) +
-  scale_fill_viridis_c(option = "plasma") +
-  theme_minimal() +
-  labs(
-    title = "County Map of Zombie Survival Index",
-    fill = "Index Value"
-  )
-
-combined_data %>%
-  arrange(desc(as.numeric(index_1))) %>%
-  slice_head(n = 6)
-# top rows match map - goooood
+  
