@@ -1,6 +1,6 @@
 ---
 title: "QTM 150 Final Presentation"
-author: "Nick Huberty"
+author: "Nick Huberty, Alex Nuckols, William Chung, Caroline Ball"
 date: "`r Sys.Date()`"
 output:
   slidy_presentation: default
