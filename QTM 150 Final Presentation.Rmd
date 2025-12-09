@@ -517,16 +517,41 @@ p6 <- ggplot(indicies %>% filter(index_1 < 50), aes(x=drought, y=index_1)) +
   theme_minimal()
 grid.arrange(p1, p2, p3,p4,p5,p6, nrow = 2)
 ```
+```{r}
+map_data <- counties_sf %>%
+  inner_join(combined_data, by = c("GEOID" = "GEOID"))
+ggplot(map_data) +
+  geom_sf(aes(fill = temp), color = NA) +
+  scale_fill_viridis_c(option = "inferno") +
+  theme_minimal() +
+  labs(
+    title = "County Map of Temperature",
+    fill = "Temperature"
+  )
+```
+
+```{r}
+map_data <- counties_sf %>%
+  inner_join(combined_data, by = c("GEOID" = "GEOID"))
+ggplot(map_data) +
+  geom_sf(aes(fill = precip), color = NA) +
+  scale_fill_viridis_c(option = "plasma") +
+  theme_minimal() +
+  labs(
+    title = "County Map of Precipitation",
+    fill = "Rainfall"
+  )
+```
 
 ```{r}
 map_data <- counties_sf %>%
   inner_join(combined_data, by = c("GEOID" = "GEOID"))
 ggplot(map_data) +
   geom_sf(aes(fill = index_1), color = NA) +
-  scale_fill_viridis_c(option = "plasma") +
+  scale_fill_viridis_c(option = "viridis") +
   theme_minimal() +
   labs(
-    title = "County Map of combined_data",
-    fill = "Value"
+    title = "County Map of Zombie Apocalypse Survival Index",
+    fill = "Index Value"
   )
 ```
