@@ -731,3 +731,7 @@ ggplot(map_data) +
     fill = "Index Value"
   )
 
+combined_data %>%
+  arrange(desc(as.numeric(index_1))) %>%
+  slice_head(n = 6)
+# top rows match map - goooood
