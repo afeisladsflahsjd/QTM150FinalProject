@@ -31,6 +31,7 @@ options(tigris_use_cache = TRUE)
 library(dplyr)
 library(stringr)
 library(ggplot2)
+library(yaml)
 
 pistols <- read.csv("pistols_manufacturers.csv")
 pistols <- pistols %>% select(where(~any(!is.na(.))))
