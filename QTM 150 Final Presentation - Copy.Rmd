@@ -20,14 +20,15 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-install.packages("readxl")
 library(readxl)
 library(tidyverse)
+library(tidycensus)
 library(ggridges)
 library(common)
 library(gridExtra)
 library(sf)
 library(tigris)
+options(tigris_use_cache = TRUE)
 library(dplyr)
 library(stringr)
 library(ggplot2)
@@ -158,6 +159,28 @@ indicies <- combined_data %>% select(
 combined_data <- combined_data %>% 
   mutate(candidate = pop_density < 100 & percent_farmland > 0.6 & gun_manufacturer) %>%
   left_join(indicies %>% select(ID, index_1), join_by(ID))
+
+combined_data <- combined_data %>%
+  mutate(
+    STATE_ABB = str_sub(ID, 1, 2),
+    COUNTY = str_sub(ID, 4, 6)
+  )
+data("fips_codes", package = "tidycensus")
+
+state_crosswalk <- fips_codes %>%
+  select(state, state_code) %>% 
+  distinct()
+combined_data <- combined_data %>%
+  left_join(
+    state_crosswalk,
+    by = c("STATE_ABB" = "state")
+  ) %>%
+  mutate(
+    GEOID = paste0(state_code, COUNTY)
+  )
+counties_sf <- counties(year = 2020, class = "sf") %>% 
+  st_transform(4326)
+
 ```
 
 # How we picked candidate counties
@@ -404,6 +427,20 @@ ggplot(combined_data%>%filter(!is.na(candidate)),
     x = "Percent Farmland Failed"
   ) +
   theme_minimal()
+```
+
+
+```{r}
+map_data <- counties_sf %>%
+  inner_join(combined_data, by = c("GEOID" = "GEOID"))
+ggplot(map_data) +
+  geom_sf(aes(fill = index_1), color = NA) +
+  scale_fill_viridis_c(option = "plasma") +
+  theme_minimal() +
+  labs(
+    title = "County Map of combined_data",
+    fill = "Value"
+  )
 ```
 
 -   Percent farmland failed below 0.1, or 10%, contains most candidate counties.
