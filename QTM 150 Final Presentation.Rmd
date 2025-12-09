@@ -230,7 +230,8 @@ ggplot(combined_data, aes(x=pop_density)) +
   theme_minimal()
 ```
 
--   This histogram shows us the counties with population densities \<100 per mile\^2
+-   This histogram shows us the counties with their corresponding population densities
+-   It was decided that population density \<100 per mile\^2 was a good parameter as it encapsulates most counties
 
 # Combining These
 
@@ -245,7 +246,7 @@ ggplot(combined_data, aes(x=pop_density, y=percent_farmland)) +
   theme_minimal()
 ```
 
--   Given the individual distributions, as well as the scatterplot, we decided threshold values of \<100 people/mi\^2 for population density, and \>60% farmland would be ideal ranges that would give a broad range of candidate counties
+-   Given the individual distributions, as well as the scatter plot, we decided threshold values of \<100 people/mi\^2 for population density, and \>60% farmland would be ideal ranges that would give a broad range of candidate counties
 
 # Scatter plot using these thresholds
 
@@ -590,8 +591,10 @@ map_data <- counties_sf %>%
   inner_join(combined_data, by = c("GEOID" = "GEOID"))
 ggplot(map_data) +
   geom_sf(aes(fill = index_1), color = NA) +
-  scale_fill_viridis_c(option = "viridis") +
-  theme_minimal() +
+  scale_fill_viridis_c(
+    option = "viridis",
+    limits = c(0, 6000)
+  ) +
   labs(
     title = "County Map of Zombie Apocalypse Survival Index",
     fill = "Index Value"
