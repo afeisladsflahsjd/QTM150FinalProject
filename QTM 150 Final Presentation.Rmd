@@ -112,7 +112,7 @@ combined_data$gun_manufacturer <- combined_data$total_pistols != 0
 write.csv(combined_data, "combined_data-2", row.names=FALSE)
 
 combined_data <- combined_data %>% mutate(
-  pop_density = 2024/atlas_area,
+  pop_density = `2024`/atlas_area,
   percent_farmland = LandinFarmsAcr/atlas_acre
 )
 
@@ -288,9 +288,17 @@ ggplot(combined_data %>% filter(pop_density<100, percent_farmland > 0.6),
 # Comparing Candidate Counties
 
 ```{r}
+small_text <- theme(
+  plot.title    = element_text(size = 9),
+  plot.subtitle = element_text(size = 7),
+  axis.title    = element_text(size = 7),
+  axis.text     = element_text(size = 6),
+  legend.title  = element_text(size = 7),
+  legend.text   = element_text(size = 6)
+)
 par(mfrow=c(2,2))
 g1 <- ggplot(combined_data %>% filter(candidate), 
-       aes(x=pop_density, y=percent_farmland, color = drought)) +
+             aes(x=pop_density, y=percent_farmland, color = drought)) +
   geom_point(size=0.5, alpha = 0.6) +
   scale_color_gradient(high="red", low="blue") +
   labs(
@@ -298,13 +306,14 @@ g1 <- ggplot(combined_data %>% filter(candidate),
     y="Percent Farmland",
     title = "Percent Farmland vs. Population Density",
     subtitle = str_c("Population Density < 100 people/mi", supsc("2"),
-                     ", Percent Farmland > 60%, Has Gun Manufacturer"),
+                     ", Percent Farmland > 60%, \nHas Gun Manufacturer"),
     color = "Drought\nSeverity\nIndex"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  small_text
 
 g2 <- ggplot(combined_data %>% filter(candidate), 
-       aes(x=pop_density, y=percent_farmland, color = avg_temp)) +
+             aes(x=pop_density, y=percent_farmland, color = avg_temp)) +
   geom_point(size=0.5, alpha = 0.6) +
   scale_color_gradient(high="red", low="blue") +
   labs(
@@ -312,13 +321,14 @@ g2 <- ggplot(combined_data %>% filter(candidate),
     y="Percent Farmland",
     title = "Percent Farmland vs. Population Density",
     subtitle = str_c("Population Density < 100 people/mi", supsc("2"),
-                     ", Percent Farmland > 60%, Has Gun Manufacturer"),
+                     ", Percent Farmland > 60%, \nHas Gun Manufacturer"),
     color = "Average\nTemperature"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  small_text
 
 g3 <- ggplot(combined_data %>% filter(candidate), 
-       aes(x=pop_density, y=percent_farmland, color = temp_range)) +
+             aes(x=pop_density, y=percent_farmland, color = temp_range)) +
   geom_point(size=0.5, alpha = 0.6) +
   scale_color_gradient(high="red", low="blue") +
   labs(
@@ -326,14 +336,15 @@ g3 <- ggplot(combined_data %>% filter(candidate),
     y="Percent Farmland",
     title = "Percent Farmland vs. Population Density",
     subtitle = str_c("Population Density < 100 people/mi", supsc("2"),
-                     ", Percent Farmland > 60%, Has Gun Manufacturer"),
+                     ", Percent Farmland > 60%, \nHas Gun Manufacturer"),
     color = "Temperature\nRange"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  small_text
 
 
 g4 <- ggplot(combined_data %>% filter(candidate), 
-       aes(x=pop_density, y=percent_farmland, color = percent_farm_failed)) +
+             aes(x=pop_density, y=percent_farmland, color = percent_farm_failed)) +
   geom_point(size=0.5, alpha = 0.6) +
   scale_color_gradient(high="red", low="blue") +
   labs(
@@ -341,10 +352,11 @@ g4 <- ggplot(combined_data %>% filter(candidate),
     y="Percent Farmland",
     title = "Percent Farmland vs. Population Density",
     subtitle = str_c("Population Density < 100 people/mi", supsc("2"),
-                     ", Percent Farmland > 60%, Has Gun Manufacturer"),
+                     ", Percent Farmland > 60%, \nHas Gun Manufacturer"),
     color = "% Farmland\nFailed"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  small_text
 
 library(gridExtra)
 grid.arrange(g1, g2, g3,g4, nrow = 2)
@@ -456,7 +468,14 @@ ggplot(combined_data%>%filter(!is.na(candidate)),
 
 ```{r}
 par(mfrow=c(2,3))
-
+small_text <- theme(
+  plot.title    = element_text(size = 9),
+  plot.subtitle = element_text(size = 7),
+  axis.title    = element_text(size = 7),
+  axis.text     = element_text(size = 6),
+  legend.title  = element_text(size = 7),
+  legend.text   = element_text(size = 6)
+)
 p1 <- ggplot(indicies %>% filter(index_1 < 50), aes(x=pop_density, y=index_1)) +
   geom_point(size=0.5, alpha = 0.6) +
   labs(
@@ -465,7 +484,8 @@ p1 <- ggplot(indicies %>% filter(index_1 < 50), aes(x=pop_density, y=index_1)) +
     title = "Zombie Index vs. Population Density",
     subtitle = "Zombie Index < 50"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  small_text
 
 p2 <- ggplot(indicies %>% filter(index_1 < 50), aes(x=percent_farmland, y=index_1)) +
   geom_point(size=0.5, alpha = 0.6) +
@@ -475,7 +495,8 @@ p2 <- ggplot(indicies %>% filter(index_1 < 50), aes(x=percent_farmland, y=index_
     title = "Zombie Index vs. Percent Farmland",
     subtitle = "Zombie Index < 50"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  small_text
 
 p3 <- ggplot(indicies %>% filter(index_1 < 50), aes(x=percent_farm_failed, y=index_1)) +
   geom_point(size=0.5, alpha = 0.6) +
@@ -485,7 +506,8 @@ p3 <- ggplot(indicies %>% filter(index_1 < 50), aes(x=percent_farm_failed, y=ind
     title = "Zombie Index vs. Percent Farmland Failed",
     subtitle = "Zombie Index < 50"
   ) +
-  theme_minimal()
+  theme_minimal() + 
+  small_text
 
 p4 <- ggplot(indicies %>% filter(index_1 < 50), aes(x=avg_temp, y=index_1)) +
   geom_point(size=0.5, alpha = 0.6) +
@@ -495,7 +517,8 @@ p4 <- ggplot(indicies %>% filter(index_1 < 50), aes(x=avg_temp, y=index_1)) +
     title = "Zombie Index vs. Average Temperature",
     subtitle = "Zombie Index < 50"
   ) +
-  theme_minimal()
+  theme_minimal() + 
+  small_text
 
 p5 <- ggplot(indicies %>% filter(index_1 < 50), aes(x=temp_range, y=index_1)) +
   geom_point(size=0.5, alpha = 0.6) +
@@ -505,7 +528,8 @@ p5 <- ggplot(indicies %>% filter(index_1 < 50), aes(x=temp_range, y=index_1)) +
     title = "Zombie Index vs. Temperature Range",
     subtitle = "Zombie Index < 50"
   ) +
-  theme_minimal()
+  theme_minimal() + 
+  small_text
 
 p6 <- ggplot(indicies %>% filter(index_1 < 50), aes(x=drought, y=index_1)) +
   geom_point(size=0.5, alpha = 0.6) +
@@ -515,7 +539,8 @@ p6 <- ggplot(indicies %>% filter(index_1 < 50), aes(x=drought, y=index_1)) +
     title = "Zombie Index vs. Drought Severity Index",
     subtitle = "Zombie Index < 50"
   ) +
-  theme_minimal()
+  theme_minimal() + 
+  small_text
 grid.arrange(p1, p2, p3,p4,p5,p6, nrow = 2)
 ```
 
