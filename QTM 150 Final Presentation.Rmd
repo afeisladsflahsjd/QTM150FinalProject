@@ -584,7 +584,9 @@ ggplot(map_data) +
 # Map of the MOST Important Statistic!
 
 -   This display demonstrates the areas near you that would be best for surviving zombies based on all our variables.
--   DON'T go to Monroe County, Florida.
+-   DON'T go to Monroe County, Florida and get out of New York City if you're from there.
+-   Head for Bailey County in Texas, Parmer County in Texas, Castro County in Texas, Neosho County in Kansas, and Lawrence County in Arkansas.
+-   Go go go go go go go go go go go go go
 
 ```{r}
 map_data <- counties_sf %>%
