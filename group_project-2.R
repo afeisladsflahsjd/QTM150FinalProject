@@ -28,6 +28,10 @@ population <- population %>% separate(
   sep=","
 )
 population$County <- tolower(population$County)
+agriculture$atlas_name <- iconv(agriculture$atlas_name,
+                                from = "",
+                                to = "UTF-8",
+                                sub = "")
 population$County <- gsub("[^a-z0-9]", "", population$County)
 temp$Name <- tolower(temp$Name)
 temp$Name <- gsub("[^a-z0-9]", "", temp$Name)
@@ -730,8 +734,3 @@ ggplot(map_data) +
     title = "County Map of Zombie Survival Index",
     fill = "Index Value"
   )
-
-combined_data %>%
-  arrange(desc(as.numeric(index_1))) %>%
-  slice_head(n = 6)
-# top rows match map - goooood
