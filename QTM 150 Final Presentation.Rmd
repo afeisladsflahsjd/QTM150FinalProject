@@ -205,7 +205,7 @@ counties_sf <- counties(year = 2020, class = "sf") %>%
 ```{r}
 
 ggplot(combined_data, aes(x=percent_farmland)) + 
-  geom_histogram() +
+  geom_histogram(bins = 30, na.rm = TRUE) +
   labs(
     x="Percent Farmland",
     y="Number of Counties",
@@ -221,7 +221,7 @@ ggplot(combined_data, aes(x=percent_farmland)) +
 ```{r}
 
 ggplot(combined_data, aes(x=pop_density)) + 
-  geom_histogram(binwidth = 1000) +
+  geom_histogram(binwidth = 1000, na.rm = TRUE) +
   labs(
     x=str_c("Population Density (people/mi", supsc("2"), ")"),
     y="Number of Counties",
@@ -237,7 +237,7 @@ ggplot(combined_data, aes(x=pop_density)) +
 
 ```{r}
 ggplot(combined_data, aes(x=pop_density, y=percent_farmland)) + 
-  geom_point(alpha = 0.6) +
+  geom_point(alpha = 0.6, na.rm = TRUE) +
   labs(
     x="Population Density",
     y="Percent Farmland",
@@ -390,11 +390,11 @@ grid.arrange(g1, g2, g3,g4, nrow = 2)
 
 ggplot(combined_data%>%filter(!is.na(candidate)), 
        aes(x=drought, y=candidate, color=candidate, fill=candidate)) +
-  geom_density_ridges(alpha=0.7, show.legend=FALSE) +
+  geom_density_ridges(alpha=0.7, show.legend=FALSE, na.rm = TRUE, bandwidth=0.61) +
   labs(
     title = "Drought Severity Index Distribution for Candidate and Non Candidate Counties",
     subtitle = str_c("Candidate County: Population Density < 100 people/mi", supsc("2"),
-                     ", Percent Farmland > 60%, Has Gun Manufacturer"),
+                     ", Percent Farmland > 60%, \nHas Gun Manufacturer"),
     y = "Candidate County",
     x = "Drought Severity Index"
   ) +
@@ -410,11 +410,11 @@ ggplot(combined_data%>%filter(!is.na(candidate)),
 
 ggplot(combined_data%>%filter(!is.na(candidate)), 
        aes(x=avg_temp, y=candidate, color=candidate, fill=candidate)) +
-  geom_density_ridges(alpha=0.7, show.legend=FALSE) +
+  geom_density_ridges(alpha=0.7, show.legend=FALSE, na.rm = TRUE, bandwidth = 2.03) +
   labs(
     title = "Average Temperature Distribution for Candidate and Non Candidate Counties",
     subtitle = str_c("Candidate County: Population Density < 100 people/mi", supsc("2"),
-                     ", Percent Farmland > 60%, Has Gun Manufacturer"),
+                     ", Percent Farmland > 60%, \nHas Gun Manufacturer"),
     y = "Candidate County",
     x = "Average Temperature"
   ) +
@@ -430,11 +430,11 @@ ggplot(combined_data%>%filter(!is.na(candidate)),
 
 ggplot(combined_data%>%filter(!is.na(candidate)), 
        aes(x=temp_range, y=candidate, color=candidate, fill=candidate)) +
-  geom_density_ridges(alpha=0.7, show.legend=FALSE) +
+  geom_density_ridges(alpha=0.7, show.legend=FALSE, na.rm = TRUE, bandwidth = 2.11) +
   labs(
     title = "Temperature Range Distribution for Candidate and Non Candidate Counties",
     subtitle = str_c("Candidate County: Population Density < 100 people/mi", supsc("2"),
-                     ", Percent Farmland > 60%, Has Gun Manufacturer"),
+                     ", Percent Farmland > 60%, \nHas Gun Manufacturer"),
     y = "Candidate County",
     x = "Temperature Range"
   ) +
@@ -449,11 +449,11 @@ ggplot(combined_data%>%filter(!is.na(candidate)),
 
 ggplot(combined_data%>%filter(!is.na(candidate)), 
        aes(x=percent_farm_failed, y=candidate, color=candidate, fill=candidate)) +
-  geom_density_ridges(alpha=0.7, show.legend=FALSE) +
+  geom_density_ridges(alpha=0.7, show.legend=FALSE, na.rm = TRUE, bandwidth=0.00572) +
   labs(
     title = "Percent Farmland Failed Distribution for Candidate and Non Candidate Counties",
     subtitle = str_c("Candidate County: Population Density < 100 people/mi", supsc("2"),
-                     ", Percent Farmland > 60%, Has Gun Manufacturer"),
+                     ", Percent Farmland > 60%, \nHas Gun Manufacturer"),
     y = "Candidate County",
     x = "Percent Farmland Failed"
   ) +
