@@ -734,3 +734,27 @@ ggplot(map_data) +
     title = "County Map of Zombie Survival Index",
     fill = "Index Value"
   )
+
+combined_data <- combined_data %>% left_join(avg_temp %>% select(ID, Name), join_by(ID))
+
+library(plotly)
+
+plot_ly(
+  data = combined_data %>% filter(pop_density<100, percent_farmland>0.6, gun_manufacturer),
+  x    = ~pop_density,
+  y    = ~percent_farmland,
+  type = "scatter",
+  mode = "markers",
+  text = ~paste("County Name:", Name.y,
+                "<br>population density:", pop_density,
+                "<br>percent farmland:", percent_farmland),
+  hoverinfo = "text"   
+) 
+
+
+
+
+
+
+
+
